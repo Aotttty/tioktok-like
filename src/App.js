@@ -60,6 +60,8 @@ function App() {
     setVideos(videoUrls);
   }, []);
 
+  // IntersectionObserverでの自動再生を無効化
+  // ユーザーが明示的にクリックした場合のみ再生
   useEffect(() => {
     const observerOptions = {
       root: null,
@@ -71,8 +73,11 @@ function App() {
     const handleIntersection = (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          const videoElement = entry.target;
-          videoElement.play();
+          // 自動再生を無効化 - ユーザーがクリックした場合のみ再生
+          // const videoElement = entry.target;
+          // videoElement.play().catch(error => {
+          //   console.log('動画の自動再生に失敗しました:', error);
+          // });
         } else {
           const videoElement = entry.target;
           videoElement.pause();
@@ -84,7 +89,9 @@ function App() {
 
     // We observe each video reference to trigger play/pause
     videoRefs.current.forEach((videoRef) => {
-      observer.observe(videoRef);
+      if (videoRef) {
+        observer.observe(videoRef);
+      }
     });
 
     // We disconnect the observer when the component is unmounted
@@ -116,7 +123,7 @@ function App() {
             url={video.url}
             profilePic={video.profilePic}
             setVideoRef={handleVideoRef(index)}
-            autoplay={index === 0}
+            autoplay={false}
           />
         ))}
         <BottomNavbar className="bottom-navbar" />
